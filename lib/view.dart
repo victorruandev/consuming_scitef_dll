@@ -1,3 +1,4 @@
+import 'package:consuming_scitef_dll/tef_controller.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
@@ -25,11 +26,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // int _counter = 0;
+  // late String _response;
 
-  // void _incrementCounter() {
+  // void _showResult() {
   //   setState(() {
-  //     _counter++;
+  //     _response;
   //   });
   // }
 
@@ -42,19 +43,32 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+          children: [
             const Text(
               'Resultado da chamada da função!',
             ),
             Text(
-              '__',
+              'some shit',
+              // "a resposta é: $_response:",
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          final tef = TefController();
+          // int codigoEmpresa = 00000000;
+          // int identificaoTermina = 000001;
+          // int siTefEnderecoIp = 192.168.0.116;
+          // setState(() {
+          //   _response = tef.configuraIntSiTefInterativo(
+          //       "192.168.0.116", "00000000", "000001", "0");
+          // });
+
+          debugPrint(tef.configuraIntSiTefInterativo(
+              "192.168.0.116", "00000000", "000001", "0"));
+        },
         tooltip: 'Função',
         child: const Icon(Icons.add),
       ),

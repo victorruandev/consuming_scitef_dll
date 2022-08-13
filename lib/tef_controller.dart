@@ -1,30 +1,121 @@
+import 'dart:ffi' as ffi;
+
+import 'package:ffi/ffi.dart';
+// import 'package:flutter/material.dart';
+
+typedef CConfiguraIntSiTefInterativo = ffi.Int32 Function(
+  ffi.Pointer<Utf8> codigoEmpresa,
+  ffi.Pointer<Utf8> identificaoTermina,
+  ffi.Pointer<Utf8> siTefEnderecoIp,
+  ffi.Pointer<Utf8> reservado,
+);
+typedef DartConfiguraIntSiTefInterativo = int Function(
+  ffi.Pointer<Utf8> codigoEmpresa,
+  ffi.Pointer<Utf8> identificaoTermina,
+  ffi.Pointer<Utf8> siTefEnderecoIp,
+  ffi.Pointer<Utf8> reservado,
+);
+
+typedef CIniciaFuncaoAASiTefInterativo = ffi.Int32 Function(
+  ffi.Int32 funcao,
+  ffi.Pointer<Utf8> valor,
+  ffi.Pointer<Utf8> cupomFiscal,
+  ffi.Pointer<Utf8> dataFiscal, // AAAAMMDD
+  ffi.Pointer<Utf8> horaFiscal, // HHMMSS
+  ffi.Pointer<Utf8> operador,
+  ffi.Pointer<Utf8> paramAdic,
+  ffi.Pointer<Utf8> produtos,
+);
+typedef DartIniciaFuncaoAASiTefInterativo = int Function(
+  int funcao,
+  ffi.Pointer<Utf8> valor,
+  ffi.Pointer<Utf8> cupomFiscal,
+  ffi.Pointer<Utf8> dataFiscal, // AAAAMMDD
+  ffi.Pointer<Utf8> horaFiscal, // HHMMSS
+  ffi.Pointer<Utf8> operador,
+  ffi.Pointer<Utf8> paramAdic,
+  ffi.Pointer<Utf8> produtos,
+);
+
+typedef CContinuaFuncaoSiTefInterativo = ffi.Int32 Function(
+  ffi.Pointer<ffi.Int32> comando,
+  ffi.Pointer<ffi.Long> tipoCampo,
+  ffi.Pointer<Utf8> cupomFiscal,
+  ffi.Pointer<Utf8> dataFiscal, // AAAAMMDD
+  ffi.Pointer<Utf8> horaFiscal, // HHMMSS
+  ffi.Pointer<Utf8> operador,
+  ffi.Pointer<Utf8> paramAdic,
+  ffi.Pointer<Utf8> produtos,
+);
+typedef DartContinuaFuncaoSiTefInterativo = int Function(
+  int funcao,
+  ffi.Pointer<Utf8> valor,
+  ffi.Pointer<Utf8> cupomFiscal,
+  ffi.Pointer<Utf8> dataFiscal, // AAAAMMDD
+  ffi.Pointer<Utf8> horaFiscal, // HHMMSS
+  ffi.Pointer<Utf8> operador,
+  ffi.Pointer<Utf8> paramAdic,
+  ffi.Pointer<Utf8> produtos,
+);
+
 class TefController {
-  int codigoEmpresa = 00000000;
+  final tefLib = ffi.DynamicLibrary.open("assets/dlls/SiTef/CliSiTef64I.dll");
+  // int codigoEmpresa = 00000000;
+  // int identificaoTermina = 000001;
+  // int siTefEnderecoIp = 192.168.0.116;
 
   /// ConfiguraIntSiTefInterativo: correga CliSiTef {chama-se uma vez apenas!}
-  /// A não ser que se queira mudar os parâmetros de empresa, terminal ou IP
-  configuraIntSiTefInterativo(
-      // int
-      int siTefEnderecoIp,
-      int codigoEmpresa,
-      int identificacaoTerminal) {
+  configuraIntSiTefInterativo(String siTefEnderecoIp, String codigoEmpresa,
+      String identificacaoTerminal, String reserva) {
+    // int ConfiguraIntSiTefInterativo (IPSiTef, IdLoja, IdTerminal, Reservado)
+    // debugPrint(tefLib.toString());
+    final configuraIntSiTefInterativo = tefLib.lookupFunction<
+        CConfiguraIntSiTefInterativo,
+        DartConfiguraIntSiTefInterativo>("ConfiguraIntSiTefInterativo");
+    configuraIntSiTefInterativo(
+      siTefEnderecoIp.toNativeUtf8(),
+      codigoEmpresa.toNativeUtf8(),
+      identificacaoTerminal.toNativeUtf8(),
+      "0".toNativeUtf8(),
+    );
+
     /// A rotina retorna um valor indicando se a configuração ocorreu com
     /// sucesso ou não. Caso retorne 0 (zero) o processo ocorreu de forma correta.
-
     // return 0;
   }
 
-  iniciaFuncaoSiTefInterativo() { // int
-    /// No retorno, a ela devolve o valor 10000 para continuar a transação ou
-    /// outro valor para encerrar.
-  }
-  continuaFuncaoSiTefInterativo(){ // int
-  
+  /// int IniciaFuncaoSiTefInterativo (Funcao, Valor, CupomFiscal, DataFiscal, HoraFiscal, Operador, ParamAdic)
+  iniciaFuncaoSiTefInterativo(
+    int funcao,
+    String valor,
+    String cupomFiscal,
+    String dataFiscal,
+    String horaFiscal,
+    String operador,
+    String paramAdic,
+    String produtos,
+  ) {
+    final configuraIntSiTefInterativo = tefLib.lookupFunction<
+        CIniciaFuncaoAASiTefInterativo,
+        DartIniciaFuncaoAASiTefInterativo>("ConfiguraIntSiTefInterativo");
+    configuraIntSiTefInterativo(
+      funcao,
+      valor.toNativeUtf8(),
+      cupomFiscal.toNativeUtf8(),
+      dataFiscal.toNativeUtf8(), // AAAAMMDD
+      horaFiscal.toNativeUtf8(), // HHMMSS
+      operador.toNativeUtf8(),
+      paramAdic.toNativeUtf8(),
+      produtos.toNativeUtf8(),
+    );
   }
 
-  finalizaFuncaoSiTefInterativo(){ // int
-    /// confirmando ou não a transação dependendo, respectivamente, se o cupom 
-    /// foi impresso corretamente ou não.
+  continuaFuncaoSiTefInterativo(comando, tipoCampo, tamMinimo, tamMaximo, buffer, tamBuffer, continua) {
   }
-  
+
+  // finalizaFuncaoSiTefInterativo() {
+  //   // int
+  //   /// confirmando ou não a transação dependendo, respectivamente, se o cupom
+  //   /// foi impresso corretamente ou não.
+  // }
 }
