@@ -34,6 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //   });
   // }
 
+  String? result;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
               'Resultado da chamada da função!',
             ),
             Text(
-              'some shit',
+              result.toString(),
               // "a resposta é: $_response:",
               style: Theme.of(context).textTheme.headline4,
             ),
@@ -63,15 +64,27 @@ class _MyHomePageState extends State<MyHomePage> {
           // int siTefEnderecoIp = 192.168.0.116;
           // setState(() {
           //   _response = tef.configuraIntSiTefInterativo(
-          //       "192.168.0.116", "00000000", "000001", "0");
+          //       "192.168.0.116", "00 000000", "000001", "0");
           // });
-
-          debugPrint(tef.configuraIntSiTefInterativo(
-              "192.168.0.116", "00000000", "000001", "0"));
+          // tef.configuraIntSiTefIntqerativo(
+          //     '192.168.0.116', '00000000', '0001', '0');
+          result = tef.configuraIntSiTefInterativo(
+            '192.168.0.116',
+            // '127.0.0.1',
+            '00000000',
+            'SG000001',
+            '0',
+          );
+          // var result = tef.iniciaFuncaoSiTefInterativo();
+          debugPrint(result);
         },
-        tooltip: 'Função',
+        tooltip: 'Função configura SciTef',
         child: const Icon(Icons.add),
       ),
     );
   }
 }
+
+// Inicialmente a Automação Comercial deve executar o comando ConfiguraIntSiTefInterativo, passando as
+// informações necessárias para que o Terminal de Vendas possa se comunicar com o SiTef, como Endereço IP do
+// SiTef, Código da Empresa (no SiTef Demonstração este código é 00000000) e a identificação do terminal. 
