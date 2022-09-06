@@ -1,0 +1,12 @@
+name: TefLibrary
+description: Bindings to `lib\native\tef_comands.h`.
+
+output: 'generated_tef_bindings.dart'
+
+headers:
+  entry-points:
+    - 'lib/native/tef_comands.h'
+
+# comments:
+#   style: any
+#   length: any
