@@ -1,5 +1,9 @@
+import 'dart:async';
+
+import 'package:consuming_scitef_dll/page2/page2.dart';
 import 'package:consuming_scitef_dll/tef_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -26,65 +30,93 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // late String _response;
+  late final TefController _tef;
 
-  // void _showResult() {
-  //   setState(() {
-  //     _response;
-  //   });
-  // }
+  String? confirma;
 
-  String? result;
+  @override
+  void initState() {
+    _tef = context.read<TefController>();
+    // compute()
+    // Isolate.spawn(_configuraIntSiTefInterativo, '0');
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _tef.dispose();
+    super.dispose();
+  }
+
+  Future _configuraIntSiTefInterativo() async {
+    var result;
+    if (_tef.resultConfig == null || _tef.resultConfig != 0) {
+      // só chama se o seu valor for null!
+      var result = await _tef.configuraIntSiTefInterativo(
+        _tef.tefModel.siTefEnderecoIp,
+        _tef.tefModel.codigoEmpresa,
+        _tef.tefModel.identificaoTerminal,
+        _tef.tefModel.reservado,
+      );
+    }
+    // return result;
+
+    // debugPrint('Configurado!');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: const Text('Implementação do SiTef'),
+        centerTitle: true,
+        elevation: 0,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Resultado da chamada da função!',
-            ),
-            Text(
-              result.toString(),
-              // "a resposta é: $_response:",
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Text(
+            'Resultado das chamada das funções!',
+          ),
+          Consumer<TefController>(
+            builder: (context, controller, child) {
+              return Text(
+                '''
+                  Resultado da configuração: ${_tef.resultConfig},
+                  Resultado da inicialização da funçao: ${_tef.resultStart},
+                  Resultado da continuação: ${_tef.resultContinue},
+                  Resultado da finalização: ${_tef.confirma},
+                ''',
+                style: Theme.of(context).textTheme.headline4,
+              );
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          final tef = TefController();
-          // int codigoEmpresa = 00000000;
-          // int identificaoTermina = 000001;
-          // int siTefEnderecoIp = 192.168.0.116;
-          // setState(() {
-          //   _response = tef.configuraIntSiTefInterativo(
-          //       "192.168.0.116", "00 000000", "000001", "0");
-          // });
-          // tef.configuraIntSiTefIntqerativo(
-          //     '192.168.0.116', '00000000', '0001', '0');
-          result = tef.configuraIntSiTefInterativo(
-            '192.168.0.116',
-            // '127.0.0.1',
-            '00000000',
-            'SG000001',
-            '0',
-          );
-          // var result = tef.iniciaFuncaoSiTefInterativo();
-          debugPrint(result);
+        onPressed: () async {
+          // final tef = TefLibrary(ffi.DynamicLibrary.open('assets/dlls/SiTef/CliSiTef64I.dll'));
+          // await compute(
+          //   _configuraIntSiTefInterativo,
+          //   '0',
+          // );
+          _configuraIntSiTefInterativo();
+          if (_tef.resultConfig == 0) {
+            debugPrint('SiTef Configurado!');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const Page2(title: 'shit'),
+              ),
+            );
+          }
         },
-        tooltip: 'Função configura SciTef',
-        child: const Icon(Icons.add),
+        tooltip: 'Pagamento!',
+        child: const Icon(
+          Icons.payment,
+        ),
       ),
     );
   }
 }
-
-// Inicialmente a Automação Comercial deve executar o comando ConfiguraIntSiTefInterativo, passando as
-// informações necessárias para que o Terminal de Vendas possa se comunicar com o SiTef, como Endereço IP do
-// SiTef, Código da Empresa (no SiTef Demonstração este código é 00000000) e a identificação do terminal. 
